@@ -47,11 +47,12 @@ NOTE: If you've accidentally assigned two different IDs where the person's email
 address is the same, this will throw an error so you can locate the problem row.
 
 EXAMPLE
-	load_df_to_neo4j(
-	   df, 
-	   label = c("Person", "Client"), 
-	   Unique_ID_col = "Client_ID", 
-	   other_constrain_col = c("Email", "Phone")
+
+	load_df_to_neo4j(	
+	df, 
+	label = c("Person", "Client"), 
+	Unique_ID_col = "Client_ID", 
+	other_constrain_col = c("Email", "Phone")
 	)
 
 
@@ -97,14 +98,15 @@ NOTE: Only one relationship label can be defined at a time.
 ~ I hope to add a column for edge weights or other variable properties in the next version.
 
 EXAMPLE:
+
 	load_edges_to_neo4j(
-	   df,    
-	   a.unique.property = "Customer_ID", 
-	   b.unique.property = "Item_SKU", 
-	   relationship_in_cypher = "-[:PURCHASED]->"
+	df,    
+	a.unique.property = "Customer_ID", 
+	b.unique.property = "Item_SKU", 
+	relationship_in_cypher = "-[:PURCHASED]->"
 	)
 
-	eg. The df might be two columns named "Customer" and "Product" if those are your node labels
+eg. The df might be two columns named "Customer" and "Product" if those are your node labels
 
 # ________________
 # delete_all_neo4j
@@ -115,7 +117,9 @@ This function comes in handy if you're developing a repeatable process to build 
 to repeatedly experiment and return to a blank slate. 
 
 EXAMPLE:
-	delete_all_neo4j()
+
+	delete_all_neo4j() # WARNING - This will delete EVERYTHING in your graph database!
+
 
 
 
