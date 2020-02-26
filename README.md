@@ -1,2 +1,3 @@
 # df2neo4j
-An R package to simplify creating nodes and relationships in a Neo4j graph database from data.frames 
+Load data from an R data.frame into a Neo4j graph database with a single line of code.
+
