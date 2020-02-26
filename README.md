@@ -108,7 +108,7 @@ EXAMPLE:
 
 eg. The df might be two columns named "Customer" and "Product" if those are your node labels
 
-# ________________
+
 # delete_all_neo4j
 
 WARNING: This function deletes all nodes and relationships in your current Neo4j database. The function does not take any arguments.
