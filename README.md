@@ -11,7 +11,7 @@ An R package that lets you load data from a data.frame into a Neo4j graph databa
 
 This function allows you to write a data.frame directly to nodes in Neo4j. 
 
-Note: The column names of the df will be used to name the properties. 
+**Note:** The column names of the df will be used to name the properties. 
 Eg. `"Name"`, `"Phone"`, `"Email"`, `"Client_ID"`
 
 The function writes a .csv file in your Neo4j database import directory, then loads the data to Neo4j. 
@@ -31,7 +31,7 @@ This could be an ID number or something else that should be unique, such as a pe
 Identify any other columns that contain values that should
 be unique to one node, such as a personal email address.
 
-NOTE: If you've accidentally assigned two different IDs where the person's email 
+**NOTE:** If you've accidentally assigned two different IDs where the person's email 
 address is the same, this will throw an error so you can locate the problem row.
 
 #### EXAMPLE
@@ -67,7 +67,7 @@ This function allows you to write a data.frame of edges/relationships to connect
 
 The function writes a .csv file in your Neo4j database import directory, then loads the data to Neo4j. Once done, the .csv file is no longer needed, and it will be overwritten the next time the function is used. 
 
-Note: The column names of the df must identify the label(s) for the type(s) of nodes you are connecting, but the contents of the columns are unique ID values. 
+**Note:** The column names of the df must identify the label(s) for the type(s) of nodes you are connecting, but the contents of the columns are unique ID values. 
 
 For exammple, the first column might be named "Person" and the values in that column are the value you defined using `Unique_ID_col` when creating the nodes (See: ?load_df_to_neo4j). 
 
@@ -97,7 +97,7 @@ The relationship to create between the nodes in the first and second columns, wr
 NOTE: Only one relationship label can be defined at a time.
   eg. if everyone in columns A and B have met and each pair likes the other, run the function once with `"-[:Has_Met]-"` and run it a second time with `"-[:Likes]-"` 
 
-~ I hope to add a column for edge weights or other variable properties in the next version.
+*I hope to add a column for edge weights or other variable properties in the next version.*
 
 #### EXAMPLE:
 
