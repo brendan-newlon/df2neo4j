@@ -1,5 +1,5 @@
 # df2neo4j
-Load data from an R data.frame into a Neo4j graph database with a single line of code.
+An R package that lets you load data from a data.frame into a Neo4j graph database with a single line of code.
 
 # load_df_to_neo4j
 
