@@ -63,7 +63,7 @@ If one df contains data about your individual clients while another holds data a
 
 # load_edges_to_neo4j
 
-This function allows you to write a data.frame of edges/relationships to connect nodes in Neo4j. 
+This function allows you to write a data.frame of relationships between nodes in Neo4j. 
 
 The function writes a .csv file in your Neo4j database import directory, then loads the data to Neo4j. Once done, the .csv file is no longer needed, and it will be overwritten the next time the function is used. 
 
