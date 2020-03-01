@@ -10,7 +10,7 @@ delete_all_neo4j()
 WARNING: This function deletes all nodes and relationships in your current Neo4j database.
 }
 \details{
-WARNING: This function deletes all nodes and relationships in your current Neo4j database. 
-This comes in handy if you're developing a repeatable process to build your graph database and you want 
+WARNING: This function deletes all nodes and relationships in your current Neo4j database.
+This comes in handy if you're developing a repeatable process to build your graph database and you want
 to repeatedly experiment and return to a blank slate.
 }
