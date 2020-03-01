@@ -9,10 +9,10 @@ load_df_to_neo4j(df, label, Unique_ID_col, other_constrain_col = "NONE")
 \arguments{
 \item{df}{The data.frame with data about your nodes and their properties}
 
-\item{label}{Use label to indicate what type of node is represented in your df. 
-You can assign one or more labels. 
+\item{label}{Use label to indicate what type of node is represented in your df.
+You can assign one or more labels.
 
-For example, if one df contains data about your individual clients while another holds data about your 
+For example, if one df contains data about your individual clients while another holds data about your
 corporate clients, you can label both as clients while also labeling one set as people and the other as organizations:
 
 load_df_to_neo4j(
@@ -21,7 +21,7 @@ load_df_to_neo4j(
  Unique_ID_col = "Client_ID",
  other_constrain_col = c("Email", "Phone")
  )
- 
+
 load_df_to_neo4j(
  corporate_clients,
  label = c("Organization", "Client"),
@@ -29,33 +29,33 @@ load_df_to_neo4j(
  other_constrain_col = c("Client_Contact_Email", "Client_Contact_Phone")
  )}
 
-\item{Unique_ID_col}{Indicate one column that provides a unique ID for each unique node. 
+\item{Unique_ID_col}{Indicate one column that provides a unique ID for each unique node.
 This could be an ID number or something else that should be unique, such as a personal email address or phone number.}
 
 \item{other_constrain_col}{Identify any other columns that contain values that should
 be unique to one node, such as a personal email address.
 
-NOTE: If you've accidentally assigned two different IDs where the person's email 
+NOTE: If you've accidentally assigned two different IDs where the person's email
 address is the same, this will throw an error so you can locate the problem row.}
 }
 \value{
-The function writes a .csv file in your Neo4j database import directory, then loads the data to Neo4j. 
+The function writes a .csv file in your Neo4j database import directory, then loads the data to Neo4j.
 Once done, the .csv file is no longer needed, and it will be overwritten the next time the function is used.
 }
 \description{
 Write a data.frame directly to nodes in Neo4j.
 }
 \details{
-This function allows you to write a data.frame directly to nodes in Neo4j. 
+This function allows you to write a data.frame directly to nodes in Neo4j.
 
-Note: The column names of the df will be used to name the properties. 
+Note: The column names of the df will be used to name the properties.
 Eg. "Name", "Phone", "Email", "Client_ID"
 }
 \examples{
 load_df_to_neo4j(
-   df, 
-   label = c("Person", "Client"), 
-   Unique_ID_col = "Client_ID", 
+   df,
+   label = c("Person", "Client"),
+   Unique_ID_col = "Client_ID",
    other_constrain_col = c("Email", "Phone")
 )
 

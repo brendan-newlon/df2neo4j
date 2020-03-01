@@ -12,55 +12,57 @@ load_edges_to_neo4j(
 )
 }
 \arguments{
-\item{df.with.labels.as.colnames}{A data.frame of two columns, with node labels as column names. Eg. "Client". 
-It's ok for both columns to have the same name if they are the same kind of node. If a column is unnamed, 
+\item{df.with.labels.as.colnames}{A data.frame of two columns, with node labels as column names. Eg. "Client".
+It's ok for both columns to have the same name if they are the same kind of node. If a column is unnamed,
 I ~think~ it will match a node of any label with the unique property value you define.}
 
-\item{relationship_in_cypher}{The relationship to create between the nodes in the first and second columns, written in Cypher code. 
-Relationships can be directed or undirected, and they can be labeled or unlabeled. Cypher is not case-sensitive. 
+\item{relationship_in_cypher}{The relationship to create between the nodes in the first and second columns, written in Cypher code.
+Relationships can be directed or undirected, and they can be labeled or unlabeled. Cypher is not case-sensitive.
 
-- For directed relationships, the head of the arrow indicates direction: 
-  eg. if A LIKES B, use "-[:Likes]->"  
-  eg. if B LIKES A, use  "<-[:Likes]-" 
+- For directed relationships, the head of the arrow indicates direction:
+  eg. if A LIKES B, use "-[:Likes]->"
+  eg. if B LIKES A, use  "<-[:Likes]-"
   eg. to define an unlabeled directed relationship from A towards B, use "-->"
-  
-- For mutual or undirected relationships, no arrow is needed. 
+
+- For mutual or undirected relationships, no arrow is needed.
   eg. if A and B have met, use "-[:Has_Met]-"
 
 NOTE: Only one relationship label can be defined at a time.
-  eg. if everyone in columns A and B have met and each pair likes the other, 
-  run the function once with "-[:Has_Met]-" 
-  and run it a second time with "-[:Likes]-" 
+  eg. if everyone in columns A and B have met and each pair likes the other,
+  run the function once with "-[:Has_Met]-"
+  and run it a second time with "-[:Likes]-"
 
-~ I hope to add a column for edge weights or other variable properties in the next version.}
+~ I hope to add a column for edge weights or other variable properties in the next version.
 
-\item{a.unique.property}{The name of a unique property for nodes in the first column. Eg. "Client_ID". 
+ @export}
+
+\item{a.unique.property}{The name of a unique property for nodes in the first column. Eg. "Client_ID".
 Use the name of the unique property exactly as you defined it when you created the nodes.}
 
 \item{b.unique.property}{The name of a unique property for nodes in the second column. Eg. "Client_ID"}
 }
 \value{
-The function writes a .csv file in your Neo4j database import directory, then loads the data to Neo4j. 
+The function writes a .csv file in your Neo4j database import directory, then loads the data to Neo4j.
 Once done, the .csv file is no longer needed, and it will be overwritten the next time the function is used.
 }
 \description{
 Write a data.frame of edges/relationships to Neo4j.
 }
 \details{
-This function allows you to write a data.frame of edges/relationships to connect nodes in Neo4j. 
+This function allows you to write a data.frame of edges/relationships to connect nodes in Neo4j.
 
-Note: The column names of the df must identify the label(s) for the type(s) of nodes you are connecting, 
-but the contents of the columns are unique ID values. 
+Note: The column names of the df must identify the label(s) for the type(s) of nodes you are connecting,
+but the contents of the columns are unique ID values.
 
-For exammple, the first column might be named "Person" and the values in that column are the value you 
+For exammple, the first column might be named "Person" and the values in that column are the value you
 defined using Unique_ID_col when creating the nodes (See: ?load_df_to_neo4j).
 }
 \examples{
 
 load_edges_to_neo4j(
-   df,    
-   a.unique.property = "Customer_ID", 
-   b.unique.property = "Item_SKU", 
+   df,
+   a.unique.property = "Customer_ID",
+   b.unique.property = "Item_SKU",
    relationship_in_cypher = "-[:PURCHASED]->"
 )
 # eg. The df might be two columns named "Customer" and "Product" if those are your node labels
