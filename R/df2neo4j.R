@@ -130,15 +130,17 @@ load_df_to_neo4j <- function(df, label, Unique_ID_col, other_constrain_col = "NO
   } else {  # if there are no other constrain cols...
     # simplify the properties identification to exactly match the column names
     props <- character()
-    for (i in 2:ncol(df)) {
-      props <-
-        paste0(props, paste0("`", names(df[i]), "`: line.", names(df[i]), ","))
-    }
+    if(ncol(df) > 1){
+      for (i in 2:ncol(df)) {
+        props <-
+          paste0(props, paste0("`", names(df[i]), "`: line.", names(df[i]), ","))
+      }
     props <- props %>%  gsub(",$", "", .)
     write.table(df, file = paste0(dir, "df.csv"), append = FALSE, row.names = FALSE, quote = TRUE, sep = ",", eol = "\n", na = "NA")
 
     paste0("USING PERIODIC COMMIT 10000 LOAD CSV WITH HEADERS FROM 'file:///df.csv' AS line ", "MERGE(a", all_labels, "{`", Unique_ID_col, "`: line.", Unique_ID_col, "}) SET a += { ", props, " }")  %>%
       call_neo4j(con)
+    }
   }
 } # End of function
 
