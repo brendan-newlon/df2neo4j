@@ -68,8 +68,8 @@ ipak(packages)
 #' )
 #'
 
-load_df_to_neo4j <- function(df, label, Unique_ID_col, other_constrain_col = "NONE"){
-  all_labels <- paste0(":",label," ", collapse = " ")
+load_df_to_neo4j <- function(df, label, Unique_ID_col, other_constrain_col = "NONE", dir = neo.import.dir){
+  all_labels <- paste0(":",label," ", collapse = " ") %>% str_trim
 
   names(df) <- names(df) %>% gsub("\\.", "_", .)
   df <- df %>% mutate_all(as.character)
