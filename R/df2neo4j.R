@@ -69,6 +69,7 @@ ipak(packages)
 #'
 
 load_df_to_neo4j <- function(df, label, Unique_ID_col, other_constrain_col = "NONE", neo.import.dir){
+  dir = neo.import.dir
   all_labels <- paste0(":",label," ", collapse = " ") %>% str_trim
 
   names(df) <- names(df) %>% gsub("\\.", "_", .)
@@ -205,8 +206,8 @@ load_df_to_neo4j <- function(df, label, Unique_ID_col, other_constrain_col = "NO
 #' # eg. The df might be two columns named "Customer" and "Product" if those are your node labels
 #'
 
-load_edges_to_neo4j <- function(df.with.labels.as.colnames, a.unique.poperty, b.unique.poperty, relationship_in_cypher){
-
+load_edges_to_neo4j <- function(df.with.labels.as.colnames, a.unique.poperty, b.unique.poperty, relationship_in_cypher, neo.import.dir){
+dir = neo.import.dir
   # ADD OPTION TO HAVE A COLUMN FOR EDGE WEIGHTS !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
   write.table(df.with.labels.as.colnames,file = paste0(dir,"df.with.labels.as.colnames.csv"),
