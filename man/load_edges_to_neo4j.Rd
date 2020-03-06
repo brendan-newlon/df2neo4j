@@ -8,7 +8,8 @@ load_edges_to_neo4j(
   df.with.labels.as.colnames,
   a.unique.poperty,
   b.unique.poperty,
-  relationship_in_cypher
+  relationship_in_cypher,
+  neo.import.dir
 )
 }
 \arguments{
@@ -32,7 +33,9 @@ NOTE: Only one relationship label can be defined at a time.
   run the function once with "-[:Has_Met]-"
   and run it a second time with "-[:Likes]-"
 
-~ I hope to add a column for edge weights or other variable properties in the next version.
+~ I hope to add a column for edge weights or other variable properties in the next version.}
+
+\item{neo.import.dir}{The directory location of the Neo4j import folder.
 
  @export}
 
