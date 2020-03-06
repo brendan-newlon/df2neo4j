@@ -4,7 +4,13 @@
 \alias{load_df_to_neo4j}
 \title{load_df_to_neo4j}
 \usage{
-load_df_to_neo4j(df, label, Unique_ID_col, other_constrain_col = "NONE")
+load_df_to_neo4j(
+  df,
+  label,
+  Unique_ID_col,
+  other_constrain_col = "NONE",
+  neo.import.dir
+)
 }
 \arguments{
 \item{df}{The data.frame with data about your nodes and their properties}
@@ -37,6 +43,8 @@ be unique to one node, such as a personal email address.
 
 NOTE: If you've accidentally assigned two different IDs where the person's email
 address is the same, this will throw an error so you can locate the problem row.}
+
+\item{neo.import.dir}{The directory location of the Neo4j import folder.}
 }
 \value{
 The function writes a .csv file in your Neo4j database import directory, then loads the data to Neo4j.

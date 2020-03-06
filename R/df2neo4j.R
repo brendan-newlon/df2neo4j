@@ -53,6 +53,8 @@ ipak(packages)
 #' NOTE: If you've accidentally assigned two different IDs where the person's email
 #' address is the same, this will throw an error so you can locate the problem row.
 #'
+#' @param neo.import.dir The directory location of the Neo4j import folder.
+#'
 #' @export
 #'
 #' @return The function writes a .csv file in your Neo4j database import directory, then loads the data to Neo4j.
@@ -188,6 +190,9 @@ load_df_to_neo4j <- function(df, label, Unique_ID_col, other_constrain_col = "NO
 #'   and run it a second time with "-[:Likes]-"
 #'
 #' ~ I hope to add a column for edge weights or other variable properties in the next version.
+#'
+#'
+#' @param neo.import.dir The directory location of the Neo4j import folder.
 #'
 #'  @export
 #'
