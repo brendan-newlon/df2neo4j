@@ -116,7 +116,7 @@ load_df_to_neo4j <- function(df, label, Unique_ID_col, other_constrain_col = "NO
 
     # SECOND: ON each label, constrain each of the other constrain_col
     for (i in 1:length(label)) {
-      if (length(other_constrain_col) > 1 || other_constrain_col != "NONE") {
+      if (length(other_constrain_col) > 1 && other_constrain_col != "NONE") {
         for (u in 1:length(other_constrain_col)) {
           paste0("CREATE CONSTRAINT ON (n:", label[i], ") ASSERT n.", other_constrain_col[u], " IS UNIQUE") %>% call_neo4j(con)
         }
@@ -144,7 +144,7 @@ load_df_to_neo4j <- function(df, label, Unique_ID_col, other_constrain_col = "NO
       }
 
       props <- props %>%  gsub(",$", "", .)
-      write.table(df1, file = paste0(dir, "df.csv"), append = FALSE, row.names = FALSE, quote = TRUE, sep = ",", eol = "\n", na = "NA")
+      # write.table(df1, file = paste0(dir, "df.csv"), append = FALSE, row.names = FALSE, quote = TRUE, sep = ",", eol = "\n", na = "NA")
 
       paste0("USING PERIODIC COMMIT 10000 LOAD CSV WITH HEADERS FROM 'file:///df.csv' AS line ",
              "MERGE(a", all_labels, "{`", Unique_ID_col,"`: line.",Unique_ID_col,"}) SET a += { ", props," }")  %>%  call_neo4j(con)
