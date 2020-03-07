@@ -146,6 +146,12 @@ load_df_to_neo4j <- function(df, label, Unique_ID_col, other_constrain_col = "NO
       props <- props %>%  gsub(",$", "", .)
       # write.table(df1, file = paste0(dir, "df.csv"), append = FALSE, row.names = FALSE, quote = TRUE, sep = ",", eol = "\n", na = "NA")
 
+
+
+      # !!!!!!!!!!!!!!!!!!!!! PROBLEM IS HERE !!!!!!!!!!!!!!!!!!!!!!
+    # when run from the package, for some reason it fails to do this step. But if you run it as a local function there's no problem.
+      #FixMe
+
       paste0("USING PERIODIC COMMIT 10000 LOAD CSV WITH HEADERS FROM 'file:///df.csv' AS line ",
              "MERGE(a", all_labels, "{`", Unique_ID_col,"`: line.",Unique_ID_col,"}) SET a += { ", props," }")  %>%  call_neo4j(con)
 
@@ -218,7 +224,7 @@ load_df_to_neo4j <- function(df, label, Unique_ID_col, other_constrain_col = "NO
 #'
 #' @param neo.import.dir The directory location of the Neo4j import folder.
 #'
-#'  @export
+#' @export
 #'
 #' @return The function writes a .csv file in your Neo4j database import directory, then loads the data to Neo4j.
 #' Once done, the .csv file is no longer needed, and it will be overwritten the next time the function is used.
