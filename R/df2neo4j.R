@@ -71,7 +71,19 @@ ipak(packages)
 #'
 
 load_df_to_neo4j <- function(df, label, Unique_ID_col, other_constrain_col = "NONE", neo.import.dir){
-  dir = neo.import.dir
+  # dir = neo.import.dir
+
+  dir = str_split(neo.import.dir,"\\\\") %>% .[[1]]
+  # thedir = paste0("file.path(")
+  thedir = character()
+  for(i in seq_along(dir)){
+    thedir = paste0(thedir,"'",dir[[i]],"',")
+  }
+  # dir = thedir %>% gsub(",'',",")",.)
+  dir = thedir %>% gsub(",\'\',",",\'df.csv\'",.)
+  dir = paste0("file.path(",dir,")")
+
+
   all_labels <- paste0(":",label," ", collapse = " ") %>% str_trim
 
   names(df) <- names(df) %>% gsub("\\.", "_", .)
@@ -80,7 +92,14 @@ load_df_to_neo4j <- function(df, label, Unique_ID_col, other_constrain_col = "NO
   # replace NA with blank
   df <- df %>% replace(., is.na(.), "")
 
-  write.table(df,file = paste0(dir,"df.csv"), append = FALSE, row.names = FALSE, quote = TRUE, sep=",", eol="\n",  na = "NA"  )
+
+  # write.table(df,file = paste0(dir,"df.csv"), append = FALSE, row.names = FALSE, quote = TRUE, sep=",", eol="\n",  na = "NA"  )
+  write.table(df,file = eval(parse(text=dir)), append = FALSE, row.names = FALSE, quote = TRUE, sep=",", eol="\n",  na = "NA"  )
+
+  # file.path(thedir,"df.csv")
+
+  # write.table(df,file = paste0(dir,"df.csv"), append = FALSE, row.names = FALSE, quote = TRUE, sep=",", eol="\n",  na = "NA"  )
+
 
   paste0("USING PERIODIC COMMIT 10000 LOAD CSV WITH HEADERS FROM 'file:///df.csv' AS line ",
          "MERGE(a", all_labels,"{`", Unique_ID_col,"`: line.",Unique_ID_col,"})")  %>% call_neo4j(con)
@@ -142,7 +161,9 @@ load_df_to_neo4j <- function(df, label, Unique_ID_col, other_constrain_col = "NO
           paste0(props, paste0("`", names(df[i]), "`: line.", names(df[i]), ","))
       }
     props <- props %>%  gsub(",$", "", .)
-    write.table(df, file = paste0(dir, "df.csv"), append = FALSE, row.names = FALSE, quote = TRUE, sep = ",", eol = "\n", na = "NA")
+
+        # write.table(df, file = paste0(dir, "df.csv"), append = FALSE, row.names = FALSE, quote = TRUE, sep = ",", eol = "\n", na = "NA")
+    write.table(df,file = eval(parse(text=dir)), append = FALSE, row.names = FALSE, quote = TRUE, sep=",", eol="\n",  na = "NA"  )
 
     paste0("USING PERIODIC COMMIT 10000 LOAD CSV WITH HEADERS FROM 'file:///df.csv' AS line ", "MERGE(a", all_labels, "{`", Unique_ID_col, "`: line.", Unique_ID_col, "}) SET a += { ", props, " }")  %>%
       call_neo4j(con)
@@ -215,21 +236,45 @@ load_df_to_neo4j <- function(df, label, Unique_ID_col, other_constrain_col = "NO
 #'
 
 load_edges_to_neo4j <- function(df.with.labels.as.colnames, a.unique.poperty, b.unique.poperty, relationship_in_cypher, neo.import.dir){
-dir = neo.import.dir
-  # ADD OPTION TO HAVE A COLUMN FOR EDGE WEIGHTS !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+# dir = neo.import.dir
 
-  write.table(df.with.labels.as.colnames,file = paste0(dir,"df.with.labels.as.colnames.csv"),
-              append = FALSE, row.names = FALSE, quote = TRUE, sep=",", eol="\n",  na = "NA"  )
+  dir = str_split(neo.import.dir,"\\\\") %>% .[[1]]
+  # thedir = paste0("file.path(")
+  thedir = character()
+  for(i in seq_along(dir)){
+    thedir = paste0(thedir,"'",dir[[i]],"',")
+  }
+  # dir = thedir %>% gsub(",'',",")",.)
+  dir = thedir %>% gsub(",\'\',",",\'df.csv\'",.)
+  dir = paste0("file.path(",dir,")")
+
+
+
+    # ADD OPTION TO HAVE A COLUMN FOR EDGE WEIGHTS !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+  # write.table(df.with.labels.as.colnames,file = paste0(dir,"df.with.labels.as.colnames.csv"),
+  #             append = FALSE, row.names = FALSE, quote = TRUE, sep=",", eol="\n",  na = "NA"  )
+
+  write.table(df.with.labels.as.colnames,file = eval(parse(text=dir)), append = FALSE, row.names = FALSE, quote = TRUE, sep=",", eol="\n",  na = "NA"  )
+
+
 
   label_a <- names(df.with.labels.as.colnames[1])
   label_b <- names(df.with.labels.as.colnames[2])
 
+#   paste0("USING PERIODIC COMMIT 1000
+# LOAD CSV WITH HEADERS FROM \"file:///df.with.labels.as.colnames.csv\" as csvLine
+# MATCH (a :",label_a," { ",a.unique.poperty,": csvLine.",label_a," })
+# MATCH (b :",label_b," { ",b.unique.poperty,": csvLine.",label_b," })
+# MERGE (a) ",relationship_in_cypher," (b) ") %>%  call_neo4j(con)
   paste0("USING PERIODIC COMMIT 1000
-LOAD CSV WITH HEADERS FROM \"file:///df.with.labels.as.colnames.csv\" as csvLine
+LOAD CSV WITH HEADERS FROM \"file:///df.csv\" as csvLine
 MATCH (a :",label_a," { ",a.unique.poperty,": csvLine.",label_a," })
 MATCH (b :",label_b," { ",b.unique.poperty,": csvLine.",label_b," })
 MERGE (a) ",relationship_in_cypher," (b) ") %>%  call_neo4j(con)
-}
+
+
+  }
 
 #####################################################################################
 
