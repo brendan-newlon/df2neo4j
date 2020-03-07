@@ -35,9 +35,7 @@ NOTE: Only one relationship label can be defined at a time.
 
 ~ I hope to add a column for edge weights or other variable properties in the next version.}
 
-\item{neo.import.dir}{The directory location of the Neo4j import folder.
-
- @export}
+\item{neo.import.dir}{The directory location of the Neo4j import folder.}
 
 \item{a.unique.property}{The name of a unique property for nodes in the first column. Eg. "Client_ID".
 Use the name of the unique property exactly as you defined it when you created the nodes.}
