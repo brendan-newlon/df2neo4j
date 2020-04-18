@@ -19,19 +19,19 @@ I ~think~ it will match a node of any label with the unique property value you d
 
 \item{relationship_in_cypher}{The relationship to create between the nodes in the first and second columns, written in Cypher code.
 Relationships can be directed or undirected, and they can be labeled or unlabeled. Cypher is not case-sensitive.
-
-- For directed relationships, the head of the arrow indicates direction:
-  eg. if A LIKES B, use "-[:Likes]->"
-  eg. if B LIKES A, use  "<-[:Likes]-"
-  eg. to define an unlabeled directed relationship from A towards B, use "-->"
-
-- For mutual or undirected relationships, no arrow is needed.
-  eg. if A and B have met, use "-[:Has_Met]-"
+\itemize{
+\item For directed relationships, the head of the arrow indicates direction:
+eg. if A LIKES B, use "-\link{:Likes}->"
+eg. if B LIKES A, use  "<-\link{:Likes}-"
+eg. to define an unlabeled directed relationship from A towards B, use "-->"
+\item For mutual or undirected relationships, no arrow is needed.
+eg. if A and B have met, use "-\link{:Has_Met}-"
+}
 
 NOTE: Only one relationship label can be defined at a time.
-  eg. if everyone in columns A and B have met and each pair likes the other,
-  run the function once with "-[:Has_Met]-"
-  and run it a second time with "-[:Likes]-"
+eg. if everyone in columns A and B have met and each pair likes the other,
+run the function once with "-\link{:Has_Met}-"
+and run it a second time with "-\link{:Likes}-"
 
 ~ I hope to add a column for edge weights or other variable properties in the next version.}
 

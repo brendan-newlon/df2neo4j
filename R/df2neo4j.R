@@ -2,6 +2,7 @@
 #'
 #' Helpful R functions for working with Neo4j graph databases
 #'
+#' @docType package
 #' @name df2neo4j
 #'
 #'
@@ -410,7 +411,7 @@ neo_named_nodes = function(df, col,label = col, property_key = "Name"){
 #' @export
 
 
-______________________________ unique_sep_values_of_col()
+# ______________________________ unique_sep_values_of_col()
 # for when a column has values (optionally separated by a character) that should be turned into a list of unique values.
 # in this case, I'm using it to make uniqely-named nodes.
 unique_sep_values_of_col = function(df, col , label = "df_col_name", sep = ";",...){
