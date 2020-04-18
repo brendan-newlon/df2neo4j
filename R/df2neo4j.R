@@ -284,6 +284,22 @@ MERGE (a) ",relationship_in_cypher," (b) ") %>%  call_neo4j(con)
 
   }
 
+
+
+
+#####################################################################################
+#' neo_df
+#'
+#' @description
+#' A shortcut alias for load_df_to_neo4j.
+#'
+#' @export
+
+
+neo_df = function(df,label, Unique_ID_col, other_constrain_col = "NONE"){
+  load_df_to_neo4j(df, label, Unique_ID_col, other_constrain_col, neo.import.dir = neo.import.dir)
+}
+
 #####################################################################################
 
 #' delete_all_neo4j
