@@ -2,7 +2,6 @@
 #'
 #' Helpful R functions for working with Neo4j graph databases
 #'
-#' @docType package
 #' @name df2neo4j
 #'
 #'
