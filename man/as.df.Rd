@@ -7,8 +7,8 @@
 as.df(x)
 }
 \arguments{
-\item{df}{The data.frame.}
+\item{x}{The data.frame.}
 }
 \description{
-A shortcut alias for as.data.frame(stringsAsFactors = FALSE)
+A shortcut alias for x <- as.data.frame(x, stringsAsFactors = FALSE)
 }

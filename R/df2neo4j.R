@@ -533,9 +533,9 @@ nodify_cols = function(df, col, label = "df_col_name", property_key = "Name", se
 #' as.df
 #'
 #' @description
-#' A shortcut alias for as.data.frame(stringsAsFactors = FALSE)
+#' A shortcut alias for x <- as.data.frame(x, stringsAsFactors = FALSE)
 #'
-#' @param df The data.frame.
+#' @param x The data.frame.
 #'
 #' @export
 as.df = function(x){x = as.data.frame(x,stringsAsFactors=FALSE)}
