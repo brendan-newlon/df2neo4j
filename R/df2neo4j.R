@@ -493,7 +493,6 @@ nodify_col = function(df, col, label = "df_col_name", property_key = "Name", sep
 
 #' nodify_cols
 #'
-#'
 #' @description
 #' A shortcut to run nodify_col on multiple columns. The only difference is to
 #' enter the column names as a character vector.
@@ -529,6 +528,50 @@ nodify_cols = function(df, col, label = "df_col_name", property_key = "Name", se
     nodify_col(df , col[i])
   }
 }
+
+#####################################################################################
+#' as.df
+#'
+#' @description
+#' A shortcut alias for as.data.frame(stringsAsFactors = FALSE)
+#'
+#' @param df The data.frame.
+#'
+#' @export
+as.df = function(x){x = as.data.frame(x,stringsAsFactors=FALSE)}
+
+
+#' %notin%
+#'
+#' @description
+#' A shortcut alias for Negage(`%in%`).
+#'
+#' @export
+`%notin%` <- Negate(`%in%`)
+
+#' neo
+#'
+#' @description
+#' A shortcut alias for call_neo4j(con), where con is the connection as configured in the neo4r Read-Me file.
+#'
+#' @export
+neo = function(x){x = x %>% call_neo4j(con)}
+
+
+#' no_na_cols
+#'
+#' @description
+#' Remove any column in a data.frame where all values are NA.
+#'
+#' @param df The data.frame.
+#'
+#' @export
+
+no_na_cols = function(df){
+  df = df[,colSums(is.na(df))<nrow(df)]
+  return(df)
+}
+# no_na_cols = function(df){df = df[,colSums(is.na(df))<nrow(df)]}
 
 
 
