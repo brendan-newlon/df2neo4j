@@ -1,13 +1,15 @@
-#df2neo4j
-
-ipak <- function(pkg){
-  new.pkg <- pkg[!(pkg %in% installed.packages()[, "Package"])]
-  if (length(new.pkg))
-    install.packages(new.pkg, dependencies = TRUE)
-  sapply(pkg, require, character.only = TRUE)}
-
-packages <- c("neo4r","dplyr","utf8", "utils")
-ipak(packages)
+#' df2neo4j
+#'
+#' Helpful R functions for working with Neo4j graph databases
+#'
+#' @docType package
+#' @name df2neo4j
+#'
+#'
+#' @import neo4r
+#' @import dplyr
+#' @import utf8
+#' @import utils
 
 
 #' load_df_to_neo4j
@@ -299,6 +301,236 @@ delete_all_neo4j <- function() {
   "MATCH (n) DETACH DELETE n" %>%
     call_neo4j(con)
 }
+
+#####################################################################################
+
+#' enhance_from_keys
+#'
+#' @description
+#' Enhance a target data.frame that has one column of keys or IDs from
+#' the key-value pair that exists in two columns of a source data.frame.
+#'
+#' @details
+#' This handles a join to enhance one data.frame that contains a column
+#' of keys/IDs from another data.frame that contains columns of key-value
+#' pairs. For example, to lookup names by reference to ID numbers.
+#'
+#'
+#' @param target_df The data.frame to be enhanced.
+#'
+#'
+#' @param source_key_col The column in the reference data.frame containing
+#' the keys/IDs, passed as a vector, eg. Employees$id
+#'
+#' @param source_prop_col The column in the reference data.frame containing
+#' the values, passed as a vector, eg. Employees$name
+#'
+#' @param target_key_col_name The name of the column in the target data.frame
+#' containing the keys/IDs, passed as a string, eg. "Employee_ID"
+#'
+#' @param target_prop_name The name for the new column to be added to the
+#' target data.frame containing the values, passed as a string,
+#' eg. "Employee_Name"
+#'
+#'
+#' @export
+
+
+#_________________________________ enhance_from_prop_key()
+enhance_from_keys = function(target_df, source_key_col, source_prop_col, target_key_col_name, target_prop_name, remove_target_key_col = TRUE){
+  target_df = target_df %>% setNames(names(target_df) %>% gsub(paste0("^",target_prop_name,"$"),paste0(target_prop_name,"_REDUNDANT"),.) ) # just in case
+  s = source_key_col %>% as.df %>% setNames(target_key_col_name)
+  s[[target_prop_name]] = source_prop_col
+  s = s %>% mutate_all(as.character) %>% .[complete.cases(.),]
+  target_df = left_join(target_df, s)
+  if(remove_target_key_col) { df[[target_key_col_name]] = NULL }
+  return(target_df)
+}
+
+#####################################################################################
+
+#' neo_named_nodes
+#'
+#'
+#' @description
+#' create unique-constrained named nodes from unique values in a dataframe column.
+#'
+#' @details
+#' If you have a column with values that can stand as a unique identifier for the type
+#' of nodes they represent, this function creates a constraint that nodes with this label are
+#' uniquely constrained by the property key you identify.
+#'
+#' Imagine you want to create nodes representing US Postal Codes. Point this function to
+#' a column containing the zip codes. You might set the node label to be "Zip_Code". By
+#' default, the property key is set to "Name," but you might choose "Zip" as more intuitive
+#' than using Cypher QL to match: .... where Zip_Code.Name = '24710'
+#'
+#'
+#' @param df The data.frame containing the column.
+#'
+#' @param col The name of the column, as a string.
+#'
+#' @param label The node label to set in Neo4j for these nodes. As a string.
+#'
+#' @param property_key The name for the property key for these values. Eg. "Name" for nodes labeled "Person". The default is "Name". As a string.
+#'
+#' @export
+
+
+#__________________________neo_named_nodes()
+# create unique-constrained named nodes from unique values in a dataframe column.
+neo_named_nodes = function(df, col,label = col, property_key = "Name"){
+  y <- df[[col]] %>% as.df %>% na_if("")  %>% unique() %>% .[complete.cases(.),] %>% as.df %>% setNames(property_key)
+  paste0("CREATE CONSTRAINT ON (n:",label,") ASSERT n.",property_key," IS UNIQUE") %>%
+    call_neo4j(con)
+  neo_df(y, label, Unique_ID_col = property_key)
+}
+
+#####################################################################################
+
+
+#' unique_sep_values_of_col
+#'
+#'
+#' @description
+#' create a new single-column data.frame of unique values from a column of data that may
+#' include multiple values in a cell separated by a separator character.
+#'
+#' @details
+#' This takes a column of data that may include multiple values in a cell separated
+#' by a separator character and creates a new single-column data.frame of unique values.
+#'
+#' @param df The data.frame containing the column of data.
+#'
+#' @param col The name of the data column, as a string.
+#'
+#' @param label The new column name. As a string.
+#'
+#' @param sep The separator between items in a cell of the column, eg "," or ";"
+#'
+#' @export
+
+
+______________________________ unique_sep_values_of_col()
+# for when a column has values (optionally separated by a character) that should be turned into a list of unique values.
+# in this case, I'm using it to make uniqely-named nodes.
+unique_sep_values_of_col = function(df, col , label = "df_col_name", sep = ";",...){
+  if(label == "df_col_name"){
+    label = names(df[col])
+  }
+  print(paste0("Labeling nodes as: ",label))
+  x = df[[col]] %>% as.df %>% separate_rows(.,1, sep=sep) %>% na_if("")  %>% unique() %>% .[complete.cases(.),] %>% as.df %>% setNames(label)
+  return (x)
+}
+
+# x = unique_sep_values_of_col(df = ECMCustom, col = "Level_of_Impact")
+
+
+
+#####################################################################################
+
+
+
+#' nodify_col
+#'
+#'
+#' @description
+#' Shortcut to get unique values from a df column using unique_sep_values_of_col() and
+#' then create nodes from them.
+#'
+#' @details
+#' remember that label is the NODE label in Neo4j, and propery_key is the unique
+#' value that constrains nodes of that label.
+#'
+#' So if your df has a column with names of items, eg lizard_species, that are unique
+#' names, this is perfect.
+#'
+#' If the column is already named Lizard_Species (which is what you want as the
+#' Node label, ie :Lizard_Species) then you don't need to enter anything for label.
+#'
+#' If you want the unique property value to be "Name" (ie. Lizard_Species.Name) then
+#' leave property_key blank.
+#'
+#' If some rows have multiple items (eg, the row was tagged with multiple species) then
+#' set the sep and all you need to do is point this funtion at the df and column.
+#'
+#' @param df The data.frame containing the column of data.
+#'
+#' @param col The name of the data column, as a string.
+#'
+#' @param label The label to assign to these nodes. The default is to take this
+#' label from the name of the column. As a string.
+#'
+#' @param property_key The name for the property key for these values. Eg. "Name" for nodes labeled "Person". The default is "Name". As a string.
+#'
+#' @param sep The separator between items in a cell of the column, eg "," or ";"
+#'
+#' @export
+
+
+#___________________________ nodify_col()
+# Shortcut to get unique values from a df column using unique_sep_values_of_col() and then creating nodes from them.
+# remember that label is the NODE label in Neo4j, and propery_key is the unique value that constrains nodes of that label.
+# So if your df has a column with names of items, eg lizard_species, that are unique names, this is perfect.
+# If the column is already named Lizard_Species (which is what you want as the Node label, ie :Lizard_Species) then you don't need to enter anything for label.
+# If you want the unique property value to be "Name" (ie. Lizard_Species.Name) then leave property_key blank.
+# If some rows have multiple items (eg, the row was tagged with multiple species) then set the sep.
+# All you need to do is point this funtion at the df and column.
+
+nodify_col = function(df, col, label = "df_col_name", property_key = "Name", sep = ";"){
+  if(label == "df_col_name"){
+    label = names(df[col])
+  }
+  x = unique_sep_values_of_col(df,col,label,property_key, sep = sep) # a df with one column with label as its name
+  neo_named_nodes(df = x, col = label , label = label, property_key = property_key)
+}
+
+# nodify_col(df = ECMCustom, col = "Level_of_Impact")
+
+
+#####################################################################################
+
+
+#' nodify_cols
+#'
+#'
+#' @description
+#' A shortcut to run nodify_col on multiple columns. The only difference is to
+#' enter the column names as a character vector.
+#'
+#' @details
+#' Assuming all defaults, with lots of simple, unique-name-only columns representing
+#' nodes that have the node label as column name, and will have unique prop called Name (or
+#' whatever you set for all of them)
+#'
+#' ie. in Cypher: (:Label) and Label.Name
+#'
+#' @param df The data.frame containing the column of data.
+#'
+#' @param col The names of the data columns, as a list or vector, eg. col = c("Organization", "City", "Postal_Code")
+#'
+#' @param label The label to assign to these nodes. The default is to take this
+#' label from the name of the column. As a string.
+#'
+#' @param property_key The name for the property key for these values. Eg. "Name" for nodes labeled "Person". The default is "Name". As a string.
+#'
+#' @param sep The separator between items in a cell of the column, eg "," or ";"
+#'
+#' @export
+
+#________________________________ nodify_cols()   # note the plural
+# Assuming all defaults, with lots of simple, unique-name-only columns representing nodes that have the node label as column name, and will have unique prop called Name (or whatever you set for all of them)
+# ie: (:Label) and Label.Name
+nodify_cols = function(df, col, label = "df_col_name", property_key = "Name", sep = ";"){
+  label = "df_col_name"
+  property_key = "Name"
+  sep = ";"
+  for (i in seq_along (col)){
+    nodify_col(df , col[i])
+  }
+}
+
+
 
 #####################################################################################
 
