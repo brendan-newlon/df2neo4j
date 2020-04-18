@@ -7,7 +7,7 @@
 no_na_cols(df)
 }
 \arguments{
-\item{df}{The data.frame.}
+\item{df}{The data object to convert into a data.frame without factors.}
 }
 \description{
 Remove any column in a data.frame where all values are NA.

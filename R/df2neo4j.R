@@ -563,7 +563,7 @@ neo = function(x){x = x %>% call_neo4j(con)}
 #' @description
 #' Remove any column in a data.frame where all values are NA.
 #'
-#' @param df The data.frame.
+#' @param df The data object to convert into a data.frame without factors.
 #'
 #' @export
 
