@@ -3,6 +3,7 @@
 export("%notin%")
 export(as.df)
 export(delete_all_neo4j)
+export(edgify_cols)
 export(enhance_from_keys)
 export(load_df_to_neo4j)
 export(load_edges_to_neo4j)

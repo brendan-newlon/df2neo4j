@@ -9,7 +9,8 @@ load_edges_to_neo4j(
   a.unique.poperty,
   b.unique.poperty,
   relationship_in_cypher,
-  neo.import.dir
+  neo.import.dir,
+  periodic_commit = "10000"
 )
 }
 \arguments{

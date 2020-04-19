@@ -243,7 +243,14 @@ load_df_to_neo4j <- function(df, label, Unique_ID_col, other_constrain_col = "NO
 #' # eg. The df might be two columns named "Customer" and "Product" if those are your node labels
 #'
 
-load_edges_to_neo4j <- function(df.with.labels.as.colnames, a.unique.poperty, b.unique.poperty, relationship_in_cypher, neo.import.dir){
+load_edges_to_neo4j <- function(
+  df.with.labels.as.colnames, 
+  a.unique.poperty, 
+  b.unique.poperty, 
+  relationship_in_cypher, 
+  neo.import.dir,
+  periodic_commit = "10000"
+  ){
 # dir = neo.import.dir
 
   dir = str_split(neo.import.dir,"\\\\") %>% .[[1]]
@@ -275,7 +282,7 @@ load_edges_to_neo4j <- function(df.with.labels.as.colnames, a.unique.poperty, b.
 # MATCH (a :",label_a," { ",a.unique.poperty,": csvLine.",label_a," })
 # MATCH (b :",label_b," { ",b.unique.poperty,": csvLine.",label_b," })
 # MERGE (a) ",relationship_in_cypher," (b) ") %>%  call_neo4j(con)
-  paste0("USING PERIODIC COMMIT 1000
+  paste0("USING PERIODIC COMMIT ",periodic_commit," 
 LOAD CSV WITH HEADERS FROM \"file:///df.csv\" as csvLine
 MATCH (a :",label_a," { ",a.unique.poperty,": csvLine.",label_a," })
 MATCH (b :",label_b," { ",b.unique.poperty,": csvLine.",label_b," })
@@ -548,6 +555,115 @@ nodify_cols = function(df, col, label = "df_col_name", property_key = "Name", se
     nodify_col(df , col[i])
   }
 }
+####################################################################################
+
+
+#' edgify_cols
+#'
+#' @description
+#' Write edges among two or more types of nodes described in a data.frame to Neo4j.
+#'
+#' @details
+#' 
+#'
+#'
+#' @param df A data.frame 
+#' 
+#' @param a.col.name col with unique ID for a
+#' 
+#' @param b.col.names can be a character string or vector - cols with unique IDs for b
+#'
+#' @param a.unique.property The name of a unique property for nodes in the first column. Eg. "Client_ID".
+#' Use the name of the unique property exactly as you defined it when you created the nodes.
+#'
+#' @param b.unique.property The name of a unique property for nodes in the second column. Eg. "Client_ID"
+#'
+#' @param relationships_in_cypher The relationships to create between the nodes, written in Cypher code.
+#' Relationships can be directed or undirected, and they can be labeled or unlabeled. Cypher is not case-sensitive.
+#'
+#' - For directed relationships, the head of the arrow indicates direction:
+#'   eg. if A LIKES B, use "-[:Likes]->" # NOTE: brackets aren't displaying properly. Everything between the dashes should be enclosed in brackets.
+#'   eg. if B LIKES A, use  "<-[:Likes]-"
+#'   eg. to define an unlabeled directed relationship from A towards B, use "-->"
+#'
+#' - For mutual or undirected relationships, no arrow is needed.
+#'   eg. if A and B have met, use "-[:Has_Met]-"
+#'
+#'
+#' @param a.node.label
+#' 
+#' @param b.node.labels
+#'
+#' @param neo.import.dir The directory location of the Neo4j import folder.
+#' 
+#' @param periodic_commit Default is "10000" rows in memory at a time.
+#'
+#' @export
+#'
+#' @return The function writes a .csv file in your Neo4j database import directory, then loads the data to Neo4j.
+#' Once done, the .csv file is no longer needed, and it will be overwritten the next time the function is used.
+#'
+#'
+#' @examples
+#'
+#' edgify_cols(
+#'    df = staff2,
+#'    a.col.name = "userPrincipalName", 
+#'    b.col.names = c("Business_Unit", "Group", "Department", "City", "Office"), # plural
+#'    a.unique.property = a.col.name,
+#'    b.unique.properties = "Name", # pl
+#'    relationships_in_cypher = "-[:Works_In]->", # can be plural but defaults to unnamed relationship. If rels from a to all other are the same, enter it once.
+#'    a.node.label = "Person", # default
+#'    b.node.labels = b.col.names, # default, pl
+#'    neo.import.dir,
+#'    periodic_commit = "100000"
+#' )
+#' 
+#' 
+#' 
+#'
+
+
+edgify_cols = function(
+  df,
+  a.col.name, # col with unique ID for a
+  b.col.names, # plural - cols with unique IDs for b
+  a.unique.property = a.col.name, # what is the name of the unique property in the graph? Eg. "Email" if it's Person.Email
+  b.unique.properties = "Name", # plural
+  relationships_in_cypher = "--", # Plural but defaults to unnamed relationship. If rels from a to all other nodes are the same, enter it once.
+  a.node.label = a.col.name, # default expects the df column name to be the node label in the graph
+  b.node.labels = b.col.names, # default, pl
+  neo.import.dir = neo.import.dir,
+  periodic_commit = "10000"
+){
+  
+  if(length(b.col.names) > 1 && length(relationships_in_cypher) == 1){
+    relationships_in_cypher = rep(relationships_in_cypher, length(b.col.names))
+  }
+  
+  if(length(b.col.names) > 1 && length(b.unique.properties) == 1){
+    b.unique.properties = rep(b.unique.properties, length(b.col.names))
+  }
+  
+  for(i in seq_along(b.col.names)){
+    x <- list(df[[a.col.name]], df[[b.col.names[i]]]) %>% # Which columns represent unique IDs for SOURCE and TARGET?
+      as.df %>% na_if("") %>% .[complete.cases(.),] %>%
+      setNames(c(a.node.label,b.node.labels[i])) # What are the node labels for SOURCE and TARGET nodes?
+    
+    load_edges_to_neo4j(
+      x,
+      a.unique.property,
+      b.unique.properties[i],
+      relationship_in_cypher = relationships_in_cypher[i],
+      neo.import.dir,
+      periodic_commit
+    )  
+  }  # end for loop
+} # end of function
+
+
+
+
 
 #####################################################################################
 
