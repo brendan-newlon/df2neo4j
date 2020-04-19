@@ -9,3 +9,6 @@ neo_df(df, label, Unique_ID_col, other_constrain_col = "NONE")
 \description{
 A shortcut alias for load_df_to_neo4j.
 }
+\details{
+
+}

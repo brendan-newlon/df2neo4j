@@ -288,11 +288,14 @@ MERGE (a) ",relationship_in_cypher," (b) ") %>%  call_neo4j(con)
 
 
 #####################################################################################
+
 #' neo_df
 #'
 #' @description
 #' A shortcut alias for load_df_to_neo4j.
 #'
+#' @details
+#' 
 #' @export
 
 
@@ -395,6 +398,7 @@ enhance_from_keys = function(target_df, source_key_col, source_prop_col, target_
 
 #__________________________neo_named_nodes()
 # create unique-constrained named nodes from unique values in a dataframe column.
+
 neo_named_nodes = function(df, col,label = col, property_key = "Name"){
   y <- df[[col]] %>% as.df %>% na_if("")  %>% unique() %>% .[complete.cases(.),] %>% as.df %>% setNames(property_key)
   paste0("CREATE CONSTRAINT ON (n:",label,") ASSERT n.",property_key," IS UNIQUE") %>%
@@ -546,6 +550,7 @@ nodify_cols = function(df, col, label = "df_col_name", property_key = "Name", se
 }
 
 #####################################################################################
+
 #' as.df
 #'
 #' @description
@@ -554,6 +559,7 @@ nodify_cols = function(df, col, label = "df_col_name", property_key = "Name", se
 #' @param x The data.frame.
 #'
 #' @export
+
 as.df = function(x){x = as.data.frame(x,stringsAsFactors=FALSE)}
 
 
@@ -563,6 +569,7 @@ as.df = function(x){x = as.data.frame(x,stringsAsFactors=FALSE)}
 #' A shortcut alias for Negage(`%in%`).
 #'
 #' @export
+
 `%notin%` <- Negate(`%in%`)
 
 #' neo
@@ -571,6 +578,7 @@ as.df = function(x){x = as.data.frame(x,stringsAsFactors=FALSE)}
 #' A shortcut alias for call_neo4j(con), where con is the connection as configured in the neo4r Read-Me file.
 #'
 #' @export
+
 neo = function(x){x = x %>% call_neo4j(con)}
 
 
