@@ -646,6 +646,7 @@ edgify_cols = function(
   }
   
   for(i in seq_along(b.col.names)){
+    print(paste0("Linking ",i," of ",length(b.col.names),"... "))
     x <- list(df[[a.col.name]], df[[b.col.names[i]]]) %>% # Which columns represent unique IDs for SOURCE and TARGET?
       as.df %>% na_if("") %>% .[complete.cases(.),] %>%
       setNames(c(a.node.label,b.node.labels[i])) # What are the node labels for SOURCE and TARGET nodes?
