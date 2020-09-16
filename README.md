@@ -124,6 +124,40 @@ EXAMPLE:
 	delete_all_neo4j() # WARNING - This will delete EVERYTHING in your graph database!
 
 
+## Undocumented functions & shortcuts:
 
+The package contains the following functions as well, but I haven't yet documented their use here. However, some have documentation incorporated into the code itself as comments.
 
+### Additional ETL functions for various scenarios:
 
+neo_df
+
+neo_named_nodes
+
+no_na_cols
+
+nodify_col
+
+nodify_cols
+
+edgify_cols
+
+enhance_from_keys
+
+neo.rel
+
+unique_sep_values_of_col
+
+### Search functions using the CONTAINS Cypher argument:
+
+neo.search
+
+neo.find.nodes
+
+### Shortcuts:
+
+%notin%
+
+as.df
+
+neo
